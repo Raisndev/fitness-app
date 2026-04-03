@@ -1,0 +1,7 @@
+export const Config = {
+  REST_TIMER_DEFAULT_SECONDS: 90,
+  MAX_SETS_PER_EXERCISE: 10,
+  MAX_EXERCISES_PER_WORKOUT: 20,
+  WEEKLY_GOAL_DEFAULT: 4,
+  APP_SCHEME: 'fittrack',
+} as const;
