@@ -37,6 +37,14 @@ export default function RootLayout() {
           options={{ presentation: 'modal', headerShown: true, headerStyle: { backgroundColor: '#141414' }, headerTintColor: '#FFFFFF', headerTitle: 'Nueva rutina' }}
         />
         <Stack.Screen name="routines/[id]" options={{ headerShown: true, headerStyle: { backgroundColor: '#0A0A0A' }, headerTintColor: '#FFFFFF', headerTitle: 'Rutina' }} />
+        <Stack.Screen
+          name="exercises/[id]"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="exercises/create"
+          options={{ presentation: 'modal', headerShown: true, headerStyle: { backgroundColor: '#141414' }, headerTintColor: '#FFFFFF', headerTitle: 'Nuevo ejercicio' }}
+        />
       </Stack>
     </GestureHandlerRootView>
   );

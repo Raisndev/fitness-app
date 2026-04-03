@@ -1,5 +1,14 @@
 import { MuscleGroup, Equipment } from '@/constants/exercises';
 
+// ─── Equipment ───────────────────────────────────────────────────────────────
+
+export interface EquipmentRecord {
+  id: string;
+  slug: Equipment;
+  name: string;
+  icon_name: string | null;
+}
+
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 export interface Profile {
@@ -21,11 +30,16 @@ export interface Exercise {
   name: string;
   category: MuscleGroup;
   muscle_group: string[];
-  equipment: Equipment | null;
+  equipment: Equipment | null;         // denormalized slug kept for compat
+  equipment_id: string | null;         // FK → equipment table
   instructions: string | null;
+  video_url: string | null;            // YouTube / direct video URL
+  image_url: string | null;            // full-size demo image
+  thumbnail_url: string | null;        // small preview (~120×120)
   is_global: boolean;
   created_by: string | null;
   created_at: string;
+  equipment_record?: EquipmentRecord;  // joined when needed
 }
 
 // ─── Routine ─────────────────────────────────────────────────────────────────

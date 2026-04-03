@@ -4,8 +4,10 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { ActiveExercise, ActiveSet } from '@/types';
 import { Badge } from '@/components/ui/Badge';
@@ -31,6 +33,7 @@ export function ExerciseCard({
 }: ExerciseCardProps) {
   const [collapsed, setCollapsed] = useState(false);
   const doneCount = exercise.sets.filter((s) => s.isDone).length;
+  const ex = exercise.exercise;
 
   return (
     <View style={styles.card}>
@@ -40,13 +43,43 @@ export function ExerciseCard({
         onPress={() => setCollapsed((c) => !c)}
         activeOpacity={0.8}
       >
+        {/* Thumbnail */}
+        <View style={styles.thumbWrap}>
+          {ex.thumbnail_url ? (
+            <Image source={{ uri: ex.thumbnail_url }} style={styles.thumb} resizeMode="cover" />
+          ) : (
+            <View style={[styles.thumb, styles.thumbPlaceholder]}>
+              <Ionicons name="barbell-outline" size={18} color={Colors.textMuted} />
+            </View>
+          )}
+        </View>
+
         <View style={styles.headerLeft}>
-          <Text style={styles.exerciseName}>{exercise.exercise.name}</Text>
+          <View style={styles.nameRow}>
+            <Text style={styles.exerciseName} numberOfLines={1}>{ex.name}</Text>
+            {/* Video indicator */}
+            {ex.video_url && (
+              <TouchableOpacity
+                onPress={() => router.push(`/exercises/${ex.id}`)}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Ionicons name="play-circle-outline" size={16} color={Colors.secondary} />
+              </TouchableOpacity>
+            )}
+          </View>
           <View style={styles.badges}>
             <Badge
-              label={MUSCLE_GROUP_LABELS[exercise.exercise.category]}
-              category={exercise.exercise.category}
+              label={MUSCLE_GROUP_LABELS[ex.category]}
+              category={ex.category}
             />
+            {ex.equipment_record && (
+              <View style={styles.equipPill}>
+                {ex.equipment_record.icon_name && (
+                  <Ionicons name={ex.equipment_record.icon_name as any} size={10} color={Colors.textMuted} />
+                )}
+                <Text style={styles.equipPillText}>{ex.equipment_record.name}</Text>
+              </View>
+            )}
             {doneCount > 0 && (
               <View style={styles.donePill}>
                 <Text style={styles.donePillText}>{doneCount}/{exercise.sets.length}</Text>
@@ -54,6 +87,7 @@ export function ExerciseCard({
             )}
           </View>
         </View>
+
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={onRemoveExercise} style={styles.removeBtn}>
             <Ionicons name="close" size={18} color={Colors.textMuted} />
@@ -68,7 +102,6 @@ export function ExerciseCard({
 
       {!collapsed && (
         <>
-          {/* Set headers */}
           {exercise.sets.length > 0 && (
             <View style={styles.setHeader}>
               <Text style={[styles.setHeaderText, { width: 28 }]}>Set</Text>
@@ -78,7 +111,6 @@ export function ExerciseCard({
             </View>
           )}
 
-          {/* Sets */}
           {exercise.sets.map((set) => (
             <SetRow
               key={set.localId}
@@ -89,7 +121,6 @@ export function ExerciseCard({
             />
           ))}
 
-          {/* Add set button */}
           <TouchableOpacity style={styles.addSetBtn} onPress={onAddSet} activeOpacity={0.7}>
             <Ionicons name="add" size={16} color={Colors.primary} />
             <Text style={styles.addSetText}>Agregar serie</Text>
@@ -112,11 +143,32 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.lg,
+    padding: Spacing.md,
+    gap: Spacing.md,
+  },
+  thumbWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: Radius.sm,
+    overflow: 'hidden',
+    flexShrink: 0,
+  },
+  thumb: { width: 44, height: 44 },
+  thumbPlaceholder: {
+    backgroundColor: Colors.bgElevated,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: Radius.sm,
   },
   headerLeft: {
     flex: 1,
+    gap: 4,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: Spacing.xs,
   },
   headerRight: {
@@ -125,35 +177,44 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   exerciseName: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
     color: Colors.text,
+    flex: 1,
   },
   badges: {
     flexDirection: 'row',
     gap: Spacing.xs,
     alignItems: 'center',
+    flexWrap: 'wrap',
   },
+  equipPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: Colors.bgElevated,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  equipPillText: { fontSize: 10, color: Colors.textMuted, fontWeight: '500' },
   donePill: {
     backgroundColor: Colors.primary + '22',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: Radius.full,
   },
-  donePillText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Colors.primary,
-  },
-  removeBtn: {
-    padding: 4,
-  },
+  donePillText: { fontSize: 11, fontWeight: '700', color: Colors.primary },
+  removeBtn: { padding: 4 },
   setHeader: {
     flexDirection: 'row',
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    paddingTop: Spacing.xs,
     gap: Spacing.sm,
   },
   setHeaderText: {
@@ -170,9 +231,5 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     paddingTop: Spacing.sm,
   },
-  addSetText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: Colors.primary,
-  },
+  addSetText: { fontSize: 13, fontWeight: '600', color: Colors.primary },
 });
