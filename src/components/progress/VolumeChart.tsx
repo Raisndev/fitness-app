@@ -63,10 +63,8 @@ export function VolumeChart({ data, loading }: VolumeChartProps) {
             data: {
               fill: Colors.primary,
               fillOpacity: 0.9,
-              borderRadius: 4,
             },
           }}
-          cornerRadius={{ top: 4 }}
           labelComponent={<VictoryTooltip flyoutStyle={{ fill: Colors.bgElevated }} style={{ fill: Colors.text, fontSize: 11 }} />}
         />
       </VictoryChart>
